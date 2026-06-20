@@ -12,9 +12,6 @@ const PRODUCTS: Record<string, any> = {
   "paw-necklace": { name:"Paw Print Memorial Necklace", price:129, image:"/images/paw-necklace.png", tag:"Emotional", cat:"Memorial & Keepsakes", desc:"Sterling silver. Custom-etched from your pet's actual paw print.", features:["Sterling silver","Custom paw print","Inkless capture kit","Adjustable chain","Optional engraving"] },
 };
 
-for p in PRODUCTS.values():
-    p["features"] = p.get("features", ["Premium quality","Satisfaction guaranteed","Free shipping"])
-
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const p = PRODUCTS[slug];
