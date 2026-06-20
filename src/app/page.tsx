@@ -40,23 +40,22 @@ export default function HomePage() {
       </section>
       <section className="py-24 bg-white"><div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-14"><h2 className="text-3xl font-bold mb-4">Smart Products, Happier Pets</h2></div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
-          {products.map((p, i)=>(
-            <Link key={p.slug} href={`/products/${p.slug}`} className={`group bg-[var(--bg)] rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 ${i === 0 ? "sm:col-span-2 sm:row-span-1" : ""}`}>
-              <div className="relative aspect-[4/3] overflow-hidden bg-[var(--border-light)]">
-                <Image src={p.image} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes={i === 0 ? "50vw" : "33vw"} unoptimized/>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+          {products.map(p=>(
+            <Link key={p.slug} href={`/products/${p.slug}`} className="group bg-[var(--bg)] rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="relative aspect-square overflow-hidden bg-[var(--border-light)]">
+                <Image src={p.image} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="25vw" unoptimized/>
                 {p.tag && <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white text-[var(--primary)] shadow-sm">{p.tag}</span>}
               </div>
               <div className="p-5">
-                <h3 className="font-semibold mb-1">{p.name}</h3>
-                <p className="text-sm text-[var(--text-muted)] mb-3">{p.desc}</p>
+                <h3 className="font-semibold text-sm mb-1">{p.name}</h3>
                 <span className="text-lg font-bold">${p.price}</span>
               </div>
             </Link>
           ))}
         </div>
       </div></section>
-      <section className="py-24 bg-[var(--text)] text-white text-center"><div className="max-w-2xl mx-auto px-6"><h2 className="text-3xl font-bold mb-4">Smart Products, Happier Pets</h2><p className="text-[var(--announcement-text)] mb-8">Every product designed with one question: would your pet choose it?</p><Link href="/products" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:opacity-90">Browse All Products <ArrowRight size={20}/></Link></div></section>
+      <section className="py-24 bg-[var(--text)] text-white text-center"><div className="max-w-2xl mx-auto px-6"><h2 className="text-3xl font-bold mb-4">Ready to make them happier?</h2><p className="text-[var(--announcement-text)] mb-8">Every product designed with one question: would your pet choose it?</p><Link href="/products" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:opacity-90">Browse All Products <ArrowRight size={20}/></Link></div></section>
     </>
   );
 }
