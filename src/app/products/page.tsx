@@ -1,239 +1,64 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Search, ChevronDown, ArrowUpDown } from "lucide-react";
-import { WishlistButton } from "@/components/product/WishlistButton";
-
-const PER_PAGE = 12;
+import { Search } from "lucide-react";
 
 const CATS = ["all","calming","safety","feeding","health","travel","memorial"];
-const CAT_LABELS:Record<string,string> = {all:"All",calming:"Calming",safety:"Safety",feeding:"Feeding",health:"Health",travel:"Travel",memorial:"Memorial"};
-
-const SORT_OPTIONS = [
-  { value: "default", label: "Featured" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "name-asc", label: "Name: A to Z" },
-];
+const CAT_LABELS:Record<string,string> = {all:"All",calming:"Calming & Anxiety",safety:"Safety & Tracking",feeding:"Feeding & Hydration",health:"Health & Grooming",travel:"Travel & Outdoor",memorial:"Memorial & Keepsakes"};
 
 const PRODUCTS = [
   {slug:"calming-mat",name:"Weighted Calming Mat",price:89,image:"/images/calming-mat.png",tag:"Bestseller",cat:"calming",catName:"Calming & Anxiety",desc:"Deep pressure therapy for anxious pets."},
   {slug:"calming-bed",name:"Premium Calming Bed",price:129,image:"/images/calming-bed.png",tag:"New",cat:"calming",catName:"Calming & Anxiety",desc:"Orthopedic memory foam with bolster edges."},
-  {slug:"anxiety-vest",name:"Anxiety Relief Vest",price:49,image:"/images/anxiety-vest.png",cat:"calming",catName:"Calming & Anxiety",desc:"Gentle compression for storms & fireworks."},
-  {slug:"thunder-shirt",name:"Thunder Shirt Pro",price:59,image:"/images/thunder-shirt.png",cat:"calming",catName:"Calming & Anxiety",desc:"Dual-layer pressure garment."},
+  {slug:"anxiety-vest",name:"Anxiety Relief Vest",price:49,image:"/images/anxiety-vest.png",cat:"calming",catName:"Calming & Anxiety",desc:"Gentle compression wrap for storms & fireworks."},
+  {slug:"thunder-shirt",name:"Thunder Shirt Pro",price:59,image:"/images/thunder-shirt.png",cat:"calming",catName:"Calming & Anxiety",desc:"Dual-layer pressure garment. Vet recommended."},
   {slug:"calming-spray",name:"Calming Pheromone Spray",price:29,image:"/images/calming-spray.png",cat:"calming",catName:"Calming & Anxiety",desc:"Natural lavender & chamomile. 120ml."},
-  {slug:"chew-toys",name:"Calming Chew Toy Set",price:35,image:"/images/chew-toys.png",cat:"calming",catName:"Calming & Anxiety",desc:"3 textured rubber toys."},
+  {slug:"chew-toys",name:"Calming Chew Toy Set",price:35,image:"/images/chew-toys.png",cat:"calming",catName:"Calming & Anxiety",desc:"3 textured rubber toys for anxious chewers."},
   {slug:"gps-tracker",name:"GPS Pet Tracker Pro",price:149,image:"/images/gps-tracker.png",tag:"Tech",cat:"safety",catName:"Safety & Tracking",desc:"Real-time GPS. Geofence. 7-day battery."},
   {slug:"led-collar",name:"LED Safety Collar",price:39,image:"/images/led-collar.png",cat:"safety",catName:"Safety & Tracking",desc:"USB rechargeable. Visible at 500m."},
-  {slug:"smart-tag",name:"Smart ID Tag",price:25,image:"/images/smart-tag.png",cat:"safety",catName:"Safety & Tracking",desc:"QR code + NFC. Free profile."},
-  {slug:"pet-camera",name:"Pet Camera Monitor",price:99,image:"/images/pet-camera.png",tag:"Popular",cat:"safety",catName:"Safety & Tracking",desc:"1080p with treat dispenser."},
-  {slug:"pet-sensor",name:"Door/Window Pet Sensor",price:45,image:"/images/pet-sensor.png",cat:"safety",catName:"Safety & Tracking",desc:"Instant phone alerts."},
-  {slug:"slow-feeder",name:"Smart Slow Feeder Bowl",price:69,image:"/images/slow-feeder.png",tag:"Popular",cat:"feeding",catName:"Feeding & Hydration",desc:"Maze pattern slows eating by 4x."},
+  {slug:"smart-tag",name:"Smart ID Tag",price:25,image:"/images/smart-tag.png",cat:"safety",catName:"Safety & Tracking",desc:"QR code + NFC. Free profile hosting."},
+  {slug:"pet-camera",name:"Pet Camera Monitor",price:99,image:"/images/pet-camera.png",tag:"Popular",cat:"safety",catName:"Safety & Tracking",desc:"1080p cam with treat dispenser."},
+  {slug:"pet-sensor",name:"Door/Window Pet Sensor",price:45,image:"/images/pet-sensor.png",cat:"safety",catName:"Safety & Tracking",desc:"Instant phone alerts when opened."},
+  {slug:"slow-feeder",name:"Smart Slow Feeder Bowl",price:69,image:"/images/slow-feeder.png",tag:"Popular",cat:"feeding",catName:"Feeding & Hydration",desc:"Maze pattern. Slows eating by 4x."},
   {slug:"water-fountain",name:"Auto Water Fountain",price:79,image:"/images/water-fountain.png",cat:"feeding",catName:"Feeding & Hydration",desc:"Circulating filtered water. 2L."},
-  {slug:"portion-feeder",name:"Portion Control Feeder",price:99,image:"/images/portion-feeder.png",cat:"feeding",catName:"Feeding & Hydration",desc:"App-controlled. 4L capacity."},
+  {slug:"portion-feeder",name:"Portion Control Feeder",price:99,image:"/images/portion-feeder.png",cat:"feeding",catName:"Feeding & Hydration",desc:"App-controlled scheduling. 4L."},
   {slug:"elevated-feeder",name:"Elevated Feeding Stand",price:59,image:"/images/elevated-feeder.png",cat:"feeding",catName:"Feeding & Hydration",desc:"Bamboo stand with 2 stainless bowls."},
-  {slug:"food-container",name:"Travel Food Container",price:29,image:"/images/food-container.png",cat:"feeding",catName:"Feeding & Hydration",desc:"Airtight silicone. 2kg."},
+  {slug:"food-container",name:"Travel Food Container",price:29,image:"/images/food-container.png",cat:"feeding",catName:"Feeding & Hydration",desc:"Airtight silicone. 2kg. Stackable."},
   {slug:"water-filter",name:"Pet Water Filter Pitcher",price:39,image:"/images/water-filter.png",cat:"feeding",catName:"Feeding & Hydration",desc:"Ceramic filter. Removes impurities."},
   {slug:"pet-scale",name:"Smart Scale & Health Tracker",price:89,image:"/images/pet-scale.png",cat:"health",catName:"Health & Grooming",desc:"Bluetooth sync. Vet-share reports."},
-  {slug:"toothbrush-kit",name:"Sonic Toothbrush Kit",price:49,image:"/images/toothbrush-kit.png",cat:"health",catName:"Health & Grooming",desc:"3 heads. Quiet motor."},
-  {slug:"deshedding-brush",name:"Deshedding Brush Pro",price:39,image:"/images/deshedding-brush.png",cat:"health",catName:"Health & Grooming",desc:"Stainless steel teeth."},
+  {slug:"toothbrush-kit",name:"Sonic Toothbrush Kit",price:49,image:"/images/toothbrush-kit.png",cat:"health",catName:"Health & Grooming",desc:"3 heads. Quiet motor. USB charge."},
+  {slug:"deshedding-brush",name:"Deshedding Brush Pro",price:39,image:"/images/deshedding-brush.png",cat:"health",catName:"Health & Grooming",desc:"Stainless steel teeth. All coat types."},
   {slug:"nail-grinder",name:"Pet Nail Grinder",price:35,image:"/images/nail-grinder.png",cat:"health",catName:"Health & Grooming",desc:"LED light. Quiet. 2-speed."},
-  {slug:"travel-carrier",name:"Pet Travel Carrier",price:149,image:"/images/travel-carrier.png",cat:"travel",catName:"Travel & Outdoor",desc:"Airline-approved."},
-  {slug:"water-bottle",name:"Portable Water Bottle",price:29,image:"/images/water-bottle.png",cat:"travel",catName:"Travel & Outdoor",desc:"One-hand operation."},
-  {slug:"car-seat-cover",name:"Car Seat Cover",price:69,image:"/images/car-seat-cover.png",cat:"travel",catName:"Travel & Outdoor",desc:"Waterproof quilted."},
-  {slug:"travel-bowl",name:"Foldable Travel Bowl",price:19,image:"/images/travel-bowl.png",cat:"travel",catName:"Travel & Outdoor",desc:"Collapsible silicone."},
+  {slug:"travel-carrier",name:"Pet Travel Carrier",price:149,image:"/images/travel-carrier.png",cat:"travel",catName:"Travel & Outdoor",desc:"Airline-approved. Calming mat base."},
+  {slug:"water-bottle",name:"Portable Water Bottle",price:29,image:"/images/water-bottle.png",cat:"travel",catName:"Travel & Outdoor",desc:"One-hand operation. Leak-proof."},
+  {slug:"car-seat-cover",name:"Car Seat Cover",price:69,image:"/images/car-seat-cover.png",cat:"travel",catName:"Travel & Outdoor",desc:"Waterproof quilted. Universal fit."},
+  {slug:"travel-bowl",name:"Foldable Travel Bowl",price:19,image:"/images/travel-bowl.png",cat:"travel",catName:"Travel & Outdoor",desc:"Collapsible silicone. Carabiner clip."},
   {slug:"life-jacket",name:"Pet Life Jacket",price:59,image:"/images/life-jacket.png",cat:"travel",catName:"Travel & Outdoor",desc:"Reflective strips. Rescue handle."},
   {slug:"paw-necklace",name:"Paw Print Memorial Necklace",price:129,image:"/images/paw-necklace.png",tag:"Emotional",cat:"memorial",catName:"Memorial & Keepsakes",desc:"Sterling silver. Custom paw print."},
   {slug:"pet-portrait",name:"Custom Pet Portrait",price:89,image:"/images/pet-portrait.png",cat:"memorial",catName:"Memorial & Keepsakes",desc:"Hand-illustrated watercolor. Framed."},
   {slug:"keepsake-box",name:"Memory Keepsake Box",price:59,image:"/images/keepsake-box.png",cat:"memorial",catName:"Memorial & Keepsakes",desc:"Walnut wood. Brass nameplate."},
 ];
 
-function sortProducts(products: typeof PRODUCTS, sort: string) {
-  const sorted = [...products];
-  switch (sort) {
-    case "price-asc": return sorted.sort((a, b) => a.price - b.price);
-    case "price-desc": return sorted.sort((a, b) => b.price - a.price);
-    case "name-asc": return sorted.sort((a, b) => a.name.localeCompare(b.name));
-    default: return sorted;
-  }
-}
-
 export default function ProductsPage() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const initialCat = searchParams.get("cat") || "all";
-  const initialSort = searchParams.get("sort") || "default";
-  const initialQ = searchParams.get("q") || "";
-
-  const [cat, setCatState] = useState(initialCat);
-  const [sort, setSortState] = useState(initialSort);
-  const [q, setQState] = useState(initialQ);
-  const [page, setPage] = useState(0);
-  const [sortOpen, setSortOpen] = useState(false);
-
-  const updateURL = useCallback((newCat: string, newSort: string, newQ: string) => {
-    const params = new URLSearchParams();
-    if (newCat !== "all") params.set("cat", newCat);
-    if (newSort !== "default") params.set("sort", newSort);
-    if (newQ) params.set("q", newQ);
-    const qs = params.toString();
-    router.replace(qs ? `/products?${qs}` : "/products", { scroll: false });
-  }, [router]);
-
-  const setCat = (c: string) => { setCatState(c); setPage(0); updateURL(c, sort, q); };
-  const setSort = (s: string) => { setSortState(s); setSortOpen(false); updateURL(cat, s, q); };
-  const setQ = (v: string) => { setQState(v); setPage(0); updateURL(cat, sort, v); };
-
-  let items = PRODUCTS.filter(p => cat === "all" || p.cat === cat);
-  if (q) items = items.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
-  items = sortProducts(items, sort);
-  const totalPages = Math.ceil(items.length / PER_PAGE);
-  const paged = items.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
-
-  const isMemorial = cat === "memorial";
+  const [cat,setCat]=useState("all");const [q,setQ]=useState("");
+  let items=PRODUCTS.filter(p=>cat==="all"||p.cat===cat);
+  if(q) items=items.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       <h1 className="text-4xl font-bold mb-2">All Products</h1>
       <p className="text-[var(--text-muted)] mb-8">30 products across 7 categories.</p>
-
-      {/* Memorial intro — emotional warmth when browsing keepsakes */}
-      {isMemorial && (
-        <div className="mb-8 p-6 rounded-2xl bg-[var(--bg)] border border-[var(--border)]">
-          <p className="text-[var(--text-secondary)] leading-relaxed max-w-2xl">
-            <span className="font-semibold text-[var(--text)]">Memorial &amp; Keepsakes.</span>{" "}
-            Some purchases carry more weight than others. These pieces are made to honor a bond that doesn't end —
-            crafted with the same care you'd give, because they gave us everything. Take your time.
-          </p>
-        </div>
-      )}
-
-      {/* Search + Sort bar */}
-      <div className="flex gap-3 mb-6 flex-wrap items-center">
-        <div className="relative flex-1 min-w-[200px] max-w-[320px]">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
-          <input
-            placeholder="Search products..."
-            value={q}
-            onChange={e => { setQ(e.target.value); }}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[var(--border)] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)]"
-          />
-        </div>
-
-        {/* Sort dropdown */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setSortOpen(!sortOpen)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] bg-white text-sm text-[var(--text-secondary)] hover:border-[var(--accent)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
-          >
-            <ArrowUpDown size={14} />
-            {SORT_OPTIONS.find(o => o.value === sort)?.label || "Sort"}
-            <ChevronDown size={14} className={`transition-transform ${sortOpen ? "rotate-180" : ""}`} />
-          </button>
-          {sortOpen && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setSortOpen(false)} />
-              <div className="absolute right-0 top-full mt-1 z-20 w-48 bg-white border border-[var(--border)] rounded-xl shadow-lg overflow-hidden">
-                {SORT_OPTIONS.map(opt => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setSort(opt.value)}
-                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-[var(--border-light)] ${sort === opt.value ? "text-[var(--accent)] font-semibold bg-[var(--accent)]/5" : "text-[var(--text-secondary)]"}`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+      <div className="flex gap-3 mb-6 flex-wrap">
+        <div className="relative flex-1 min-w-[200px] max-w-[320px]"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"/><input placeholder="Search..." value={q} onChange={e=>setQ(e.target.value)} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[var(--border)] bg-white text-sm focus:outline-none focus:border-[var(--accent)]"/></div>
       </div>
-
-      {/* Category filter pills */}
       <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-        {CATS.map(c => (
-          <button
-            key={c}
-            onClick={() => { setCat(c); }}
-            className={`flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 ${cat === c ? "bg-[var(--text)] text-white" : "bg-white border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)]"}`}
-          >
-            {CAT_LABELS[c]}
-            {c !== "all" && <span className="ml-1.5 text-xs opacity-60">({PRODUCTS.filter(p => p.cat === c).length})</span>}
-          </button>
-        ))}
+        {CATS.map(c=>(<button key={c} onClick={()=>setCat(c)} className={`flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-medium transition-all ${cat===c?"bg-[var(--text)] text-white":"bg-white border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)]"}`}>{CAT_LABELS[c]}{c!=="all"&&<span className="ml-1.5 text-xs opacity-60">({PRODUCTS.filter(p=>p.cat===c).length})</span>}</button>))}
       </div>
-
-      {/* Result count */}
-      <p className="text-sm text-[var(--text-muted)] mb-6">
-        {items.length} product{items.length !== 1 ? "s" : ""}{sort !== "default" ? ` · Sorted by ${SORT_OPTIONS.find(o => o.value === sort)?.label?.toLowerCase()}` : ""}{totalPages > 1 ? ` · Page ${page + 1} of ${totalPages}` : ""}
-      </p>
-
-      {/* Empty state */}
-      {items.length === 0 && (
-        <div className="text-center py-20">
-          <p className="text-lg text-[var(--text-muted)] mb-2">No products match your search</p>
-          <p className="text-sm text-[var(--text-muted)] mb-6">Try a different term or browse all categories</p>
-          <button
-            onClick={() => { setQ(""); setCat("all"); }}
-            className="px-6 py-3 rounded-full bg-[var(--text)] text-white font-semibold text-sm hover:opacity-90 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
-          >
-            Clear All Filters
-          </button>
-        </div>
-      )}
-
-      {/* Product grid — with memorial-specific larger card treatment */}
-      <div className={`grid gap-5 ${isMemorial ? "md:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>
-        {paged.map(p => (
-          <Link
-            key={p.slug}
-            href={`/products/${p.slug}`}
-            prefetch={true}
-            className={`group bg-white border border-[var(--border)] rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-4 ${isMemorial ? "md:flex md:flex-row" : ""}`}
-          >
-            <div className={`relative overflow-hidden bg-[var(--border-light)] ${isMemorial ? "md:w-1/2 aspect-square md:aspect-auto" : "aspect-square"}`}>
-              <Image src={p.image} alt={p.name} fill sizes={isMemorial ? "33vw" : "25vw"} className="object-cover group-hover:scale-105 transition-transform duration-500" />
-              {p.tag && (
-                <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold shadow-sm ${p.tag === "Emotional" ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "bg-[var(--text)] text-white"}`}>
-                  {p.tag}
-                </span>
-              )}
-              <div className="absolute top-2 right-2 z-10">
-                <WishlistButton product={{ id: p.slug, name: p.name, slug: p.slug, image: p.image, price: p.price }} />
-              </div>
-            </div>
-            <div className={`p-4 ${isMemorial ? "md:w-1/2 md:flex md:flex-col md:justify-center" : ""}`}>
-              <span className="text-xs text-[var(--text-muted)]">{p.catName}</span>
-              <h3 className="font-semibold mt-0.5 mb-1 text-[var(--text)]">{p.name}</h3>
-              <p className={`text-xs text-[var(--text-muted)] mb-3 ${isMemorial ? "" : "line-clamp-1"}`}>{p.desc}</p>
-              <span className="text-lg font-bold text-[var(--text)]">${p.price}</span>
-              {p.tag === "Bestseller" && <p className="text-xs text-[var(--accent)] mt-1">200+ sold this month</p>}
-              {p.tag === "Popular" && <p className="text-xs text-[var(--accent)] mt-1">Vet recommended</p>}
-              {p.tag === "Emotional" && <p className="text-xs text-[var(--accent)] mt-1">Made to order with care</p>}
-            </div>
-          </Link>
-        ))}
+      <p className="text-sm text-[var(--text-muted)] mb-6">{items.length} product{items.length!==1?"s":""}</p>
+      {items.length===0&&<div className="text-center py-20"><p className="text-lg text-[var(--text-muted)] mb-4">No products match</p><button onClick={()=>{setQ("");setCat("all")}} className="px-6 py-3 rounded-full bg-[var(--text)] text-white font-semibold text-sm">Clear Filters</button></div>}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {items.map(p=>(<Link key={p.slug} href={`/products/${p.slug}`} className="group bg-white border border-[var(--border)] rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300"><div className="relative aspect-square overflow-hidden bg-[var(--border-light)]"><Image src={p.image} alt={p.name} fill sizes="25vw" className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized/>{p.tag&&<span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--text)] text-white">{p.tag}</span>}</div><div className="p-4"><span className="text-xs text-[var(--text-muted)]">{p.catName}</span><h3 className="font-semibold mt-0.5 mb-1">{p.name}</h3><p className="text-xs text-[var(--text-muted)] mb-3 line-clamp-1">{p.desc}</p><span className="text-lg font-bold">${p.price}</span></div></Link>))}
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-10">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setPage(i)}
-              className={`w-10 h-10 rounded-lg text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 ${i === page ? "bg-[var(--text)] text-white" : "bg-white border border-[var(--border)] hover:border-[var(--accent)]"}`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

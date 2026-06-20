@@ -45,12 +45,11 @@ export const useCartStore = create<CartStore>()(
 
           if (existingIndex > -1) {
             const updated = [...state.items]
-            // Cap quantity at 99
-            updated[existingIndex].quantity = Math.min(updated[existingIndex].quantity + quantity, 99)
+            updated[existingIndex].quantity += quantity
             return { items: updated }
           }
 
-          return { items: [...state.items, { product, quantity: Math.min(quantity, 99) }] }
+          return { items: [...state.items, { product, quantity }] }
         })
       },
 
@@ -68,12 +67,10 @@ export const useCartStore = create<CartStore>()(
           get().removeItem(productId, variantId)
           return
         }
-        // Cap at 99
-        const capped = Math.min(quantity, 99)
         set((state) => ({
           items: state.items.map((item) =>
             item.product.id === productId && item.product.variantId === variantId
-              ? { ...item, quantity: capped }
+              ? { ...item, quantity }
               : item
           ),
         }))
@@ -89,7 +86,7 @@ export const useCartStore = create<CartStore>()(
           0
         ),
     }),
-    { name: 'pawhaven-cart' }
+    { name: 'mythrealms-cart' }
   )
 )
 

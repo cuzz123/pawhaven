@@ -52,18 +52,14 @@ export function CartDrawer() {
 
   useEffect(() => {
     if (!isOpen) return;
-    let cancelled = false;
     fetch("/api/products?featured=true&limit=3")
       .then((r) => r.json())
       .then((data) => {
-        if (!cancelled && data.products) {
+        if (data.products) {
           setRecommended(data.products.slice(0, 3));
         }
       })
-      .catch(() => {
-        // Cross-sells failed silently — non-blocking, the drawer still works
-      });
-    return () => { cancelled = true; };
+      .catch(() => {});
   }, [isOpen]);
 
   return (
@@ -274,8 +270,8 @@ export function CartDrawer() {
               {/* You May Also Like */}
               {recommended.length > 0 && (
                 <div className="mb-4 border-t border-[var(--border)] pt-3">
-                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-3">
-                    You may also like
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-3">
+                    You May Also Like
                   </p>
                   <div className="flex gap-3 overflow-x-auto">
                     {recommended.map((p: any) => (

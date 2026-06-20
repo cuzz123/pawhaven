@@ -80,17 +80,23 @@ export function SearchOverlay() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (query.trim()) {
-      router.push(`/products?q=${encodeURIComponent(query)}`);
+      router.push(`/search?q=${encodeURIComponent(query)}`);
       setIsOpen(false);
       setQuery("");
     }
   }
 
-  const popularSearches = ["calming mat", "GPS tracker", "slow feeder", "anxiety vest", "memorial necklace", "travel carrier"];
+  const popularSearches = [
+    "Nine-Tailed Fox",
+    "Qilin",
+    "Azure Dragon",
+    "Phoenix",
+    "Four Symbols",
+  ];
 
   function handleSuggestionClick(suggestion: string) {
     setQuery(suggestion);
-    router.push(`/products?q=${encodeURIComponent(suggestion)}`);
+    router.push(`/search?q=${encodeURIComponent(suggestion)}`);
     setIsOpen(false);
     setQuery("");
   }
@@ -130,8 +136,8 @@ export function SearchOverlay() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search calming mats, trackers, keepsakes..."
-                className="flex-1 border-none outline-none text-base bg-transparent text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 rounded"
+                placeholder="Search for jewelry, stones, apparel..."
+                className="flex-1 border-none outline-none text-base bg-transparent text-[var(--text)] placeholder:text-[var(--text-muted)]"
               />
               {loading && <Loader2 className="w-4 h-4 animate-spin text-[var(--text-muted)]" />}
               <button
@@ -147,8 +153,8 @@ export function SearchOverlay() {
             <div className="max-h-80 overflow-y-auto">
               {query.length < 2 ? (
                 <div className="p-5">
-                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-3">
-                    Try searching for
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-3">
+                    Popular Searches
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {popularSearches.map((suggestion) => (
@@ -162,11 +168,6 @@ export function SearchOverlay() {
                       </button>
                     ))}
                   </div>
-                </div>
-              ) : searchError ? (
-                <div className="p-6 text-center">
-                  <p className="text-sm text-[var(--sale)] mb-2">Search isn't available right now</p>
-                  <p className="text-xs text-[var(--text-muted)]">Try browsing our <Link href="/products" onClick={() => setIsOpen(false)} className="underline text-[var(--primary)]">product catalog</Link> instead</p>
                 </div>
               ) : results.length === 0 && !loading ? (
                 <div className="p-6 text-center text-sm text-[var(--text-muted)]">

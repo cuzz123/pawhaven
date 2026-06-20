@@ -3,29 +3,30 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Heart, Menu, X, Sun, Moon, User } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { User, ShoppingBag, Heart, Menu, X } from "lucide-react";
 import { useCartStore, useCartUIStore } from "@/lib/cart";
 import { useWishlistStore } from "@/lib/wishlist";
 import { SearchOverlay } from "./SearchOverlay";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "Shop", href: "/products" },
-  { label: "Calming", href: "/products?cat=calming" },
-  { label: "Safety", href: "/products?cat=safety" },
-  { label: "Feeding", href: "/products?cat=feeding" },
-  { label: "Memorial", href: "/products?cat=memorial" },
+  { label: "28 Mansions", href: "/collections/28-mansions" },
+  { label: "Elements", href: "/collections/five-elements" },
+  { label: "Moon", href: "/collections/moon-phases" },
+  { label: "Pearls", href: "/collections/ocean-pearls" },
+  { label: "Quiz", href: "/guardian-quiz" },
 ];
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
-    const pathname = usePathname();
+  const pathname = usePathname();
   const itemCount = useCartStore((s) => s.itemCount());
   const openCart = useCartUIStore((s) => s.openCart);
   const wishlistCount = useWishlistStore((s) => s.count());
-  
+  const user = session?.user;
+
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
@@ -38,7 +39,7 @@ export function Header() {
         <Link
           href="/"
           className="flex shrink-0 items-center gap-2.5"
-          aria-label="PawHaven home"
+          aria-label="MythRealms home"
         >
           {/* Dragon scale / flame SVG */}
           <svg
@@ -62,7 +63,7 @@ export function Header() {
           </svg>
 
           <span className="font-serif text-xl font-semibold tracking-tight text-[var(--text)]">
-            PawHaven
+            MythRealms
           </span>
         </Link>
 
@@ -86,25 +87,22 @@ export function Header() {
           {/* Search */}
           <SearchOverlay />
 
-          {/* Sign In */}
-          {session?.user ? (
-            <div className="relative group">
-              <button className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--primary)]/10 text-[var(--primary)] font-bold text-sm" aria-label="Account">
-                {session.user.name?.charAt(0) || session.user.email?.charAt(0) || "U"}
-              </button>
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-[var(--border)] rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                <div className="p-3 border-b border-[var(--border)]">
-                  <p className="text-sm font-semibold">{session.user.name || "User"}</p>
-                  <p className="text-xs text-[var(--text-muted)]">{session.user.email}</p>
-                </div>
-                <button onClick={() => signOut()} className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-b-xl">Sign Out</button>
-              </div>
-            </div>
-          ) : (
-            <Link href="/auth/signin" aria-label="Sign In" className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--border-light)] hover:text-[var(--text)]">
+          {/* Account */}
+          <Link
+            href="/account"
+            aria-label={user ? `${user.name || "My account"} — View account` : "My account — Sign in"}
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--border-light)] hover:text-[var(--text)]"
+          >
+            {user?.image ? (
+              <img
+                src={user.image}
+                alt={user.name || "User"}
+                className="h-5 w-5 rounded-full object-cover"
+              />
+            ) : (
               <User size={20} strokeWidth={1.8} />
-            </Link>
-          )}
+            )}
+          </Link>
 
           {/* Wishlist */}
           <Link
@@ -133,10 +131,6 @@ export function Header() {
                 {itemCount > 99 ? "99+" : itemCount}
               </span>
             )}
-          </button>
-          <button type="button" onClick={() => { const d=document.documentElement; const is=d.getAttribute("data-theme")==="dark"; const next=is?"light":"dark"; d.setAttribute("data-theme",next); localStorage.setItem("pawhaven_theme",next); }} className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-secondary)] hover:bg-[var(--border-light)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]" aria-label="Toggle theme">
-            <Sun size={18} strokeWidth={1.8} className="hidden dark:block" />
-            <Moon size={18} strokeWidth={1.8} className="block dark:hidden" />
           </button>
 
           {/* Mobile hamburger */}
