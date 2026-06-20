@@ -19,8 +19,8 @@ export function StarRating({ rating, size = "md", showValue, count, linkTo }: St
       key={star}
       className={`${iconSize} ${
         star <= Math.round(rating)
-          ? "text-yellow-400 fill-yellow-400"
-          : "text-gray-500 fill-gray-500"
+          ? "text-[var(--accent)] fill-[var(--accent)]"
+          : "text-[var(--border)] fill-[var(--border)]"
       }`}
     />
   ));

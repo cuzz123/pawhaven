@@ -53,6 +53,6 @@ export const useWishlistStore = create<WishlistStore>()(
 
       count: () => get().items.length,
     }),
-    { name: "mythrealms-wishlist" }
+    { name: "pawhaven-wishlist" }
   )
 );

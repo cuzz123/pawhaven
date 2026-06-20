@@ -62,8 +62,8 @@ export function SearchOverlay() {
             id: p.id,
             name: p.name,
             slug: p.slug,
-            price: p.variants[0]?.price || 0,
-            image: p.images[0],
+            price: p.price || 0,
+            image: p.image || "",
             category: p.category?.name || "",
           }))
         );

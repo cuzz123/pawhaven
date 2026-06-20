@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 
 const CATS = ["all","calming","safety","feeding","health","travel","memorial"];
@@ -40,7 +41,9 @@ const PRODUCTS = [
 ];
 
 export default function ProductsPage() {
-  const [cat,setCat]=useState("all");const [q,setQ]=useState("");
+  const searchParams = useSearchParams();
+  const [cat,setCat]=useState(searchParams.get("cat") || "all");
+  const [q,setQ]=useState(searchParams.get("q") || "");
   let items=PRODUCTS.filter(p=>cat==="all"||p.cat===cat);
   if(q) items=items.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
 

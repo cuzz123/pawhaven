@@ -1,4 +1,2 @@
-import { NextResponse } from "next/server"
-export async function GET() {
-  return NextResponse.json({ status: "ok", time: new Date().toISOString() })
-}
+export const dynamic = "force-dynamic";
+export function GET() { return Response.json({ status:"ok", name:"PawHaven API", version:"1.0.0" }); }
