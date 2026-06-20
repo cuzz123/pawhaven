@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Star, Truck, Shield, Heart } from "lucide-react";
+import { ArrowRight, Star, Truck, Shield, Heart, Wind, UtensilsCrossed, HeartPulse, MapPin, Sparkles } from "lucide-react";
 import { WishlistButton } from "@/components/product/WishlistButton";
 import { RecentViews } from "@/components/product/RecentViews";
 
@@ -25,12 +25,12 @@ const features = [
 ];
 
 const categories = [
-  { name:"Calming", emoji:"😌", slug:"calming" },
-  { name:"Safety", emoji:"🛡️", slug:"safety" },
-  { name:"Feeding", emoji:"🍽️", slug:"feeding" },
-  { name:"Health", emoji:"💚", slug:"health" },
-  { name:"Travel", emoji:"🧳", slug:"travel" },
-  { name:"Memorial", emoji:"🕯️", slug:"memorial" },
+  { name:"Calming", Icon: Wind, slug:"calming" },
+  { name:"Safety", Icon: Shield, slug:"safety" },
+  { name:"Feeding", Icon: UtensilsCrossed, slug:"feeding" },
+  { name:"Health", Icon: HeartPulse, slug:"health" },
+  { name:"Travel", Icon: MapPin, slug:"travel" },
+  { name:"Memorial", Icon: Sparkles, slug:"memorial" },
 ];
 
 export default function HomePage() {
@@ -101,7 +101,9 @@ export default function HomePage() {
                 href={`/products?cat=${c.slug}`}
                 className="flex-shrink-0 px-5 py-4 rounded-xl border border-[var(--border)] bg-white hover:border-[var(--accent)] hover:shadow-sm transition-all text-center min-w-[100px] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
               >
-                <div className="text-lg mb-1">{c.emoji}</div>
+                <div className="text-[var(--accent)] mb-1 flex justify-center">
+                <c.Icon size={22} strokeWidth={1.8} />
+              </div>
                 <div className="text-xs font-semibold text-[var(--text)]">{c.name}</div>
               </Link>
             ))}
