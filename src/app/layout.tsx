@@ -5,6 +5,7 @@ import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/layout/CartDrawer";
+import { EmailPopup } from "@/components/layout/EmailPopup";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
@@ -17,13 +18,17 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <head><meta name="theme-color" content="#FDF8F4" /><link rel="icon" href="/favicon.svg" /></head>
+      <head>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":"PawHaven","url":"https://pawhaven.vercel.app"})}}/><meta name="theme-color" content="#FDF8F4" /><link rel="icon" href="/favicon.svg" /><link rel="canonical" href="https://pawhaven.vercel.app" />
+  </head>
       <body className="antialiased">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[var(--text)] focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)]">Skip to content</a>
         <Providers>
           <AnnouncementBar /><Header /><CartDrawer />
           <main id="main-content">{children}</main>
           <Footer />
         </Providers>
+        <EmailPopup />
         <Toaster position="bottom-center" />
       </body>
     </html>

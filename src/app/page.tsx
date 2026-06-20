@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Star, Truck, Shield, Heart } from "lucide-react";
+import { WishlistButton } from "@/components/product/WishlistButton";
+import { RecentViews } from "@/components/product/RecentViews";
 
 export const dynamic = "force-dynamic";
 
@@ -22,34 +24,167 @@ const features = [
   { icon:Star, title:"4.9 Rating", desc:"From 2,000+ pet parents" },
 ];
 
+const categories = [
+  { name:"Calming", emoji:"😌", slug:"calming" },
+  { name:"Safety", emoji:"🛡️", slug:"safety" },
+  { name:"Feeding", emoji:"🍽️", slug:"feeding" },
+  { name:"Health", emoji:"💚", slug:"health" },
+  { name:"Travel", emoji:"🧳", slug:"travel" },
+  { name:"Memorial", emoji:"🕯️", slug:"memorial" },
+];
+
 export default function HomePage() {
   return (
     <>
-      <section className="relative min-h-[90vh] flex items-center bg-[var(--bg)] pt-[72px]">
-        <div className="absolute inset-0" style={{background:"radial-gradient(ellipse at 70% 50%, rgba(200,149,108,0.08) 0%, transparent 50%)"}}/>
-        <div className="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full border border-[var(--border)] bg-white text-sm text-[var(--primary)] font-semibold">Smart Pet Wellness</span>
-            <h1 className="text-[clamp(2.4rem,5vw,3.6rem)] font-bold text-[var(--text)] leading-[1.12] mb-6">Because they give us<br/><span className="text-[var(--accent)]">everything</span>.</h1>
-            <p className="text-lg text-[var(--text-secondary)] max-w-[520px] mb-8">Premium smart pet products for modern pet parents. Calming, safety, feeding, and keepsakes.</p>
-            <div className="flex gap-4"><Link href="/products" className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--text)] text-white font-semibold hover:opacity-90">Shop All <ArrowRight size={18}/></Link></div>
-            <div className="flex gap-8 mt-10 pt-8 border-t border-[var(--border)]">{features.map(f=>(<div key={f.title} className="flex items-center gap-2"><f.icon size={18} className="text-[var(--accent)]"/><div><div className="text-sm font-semibold">{f.title}</div><div className="text-xs text-[var(--text-muted)]">{f.desc}</div></div></div>))}</div>
+      {/* Hero — typography-led, warm, boutique feel */}
+      <section className="relative min-h-[90vh] flex items-center pt-[72px]">
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+          <div className="py-16 lg:py-24">
+            <p className="text-sm font-medium text-[var(--accent)] mb-6 tracking-wide">
+              Premium pet wellness, curated with care
+            </p>
+            <h1 className="font-serif text-[clamp(2.8rem,6vw,4.8rem)] font-semibold text-[var(--text)] leading-[1.08] mb-8 text-balance">
+              Because they give us<br/>
+              <span className="text-[var(--accent)]">everything</span>.
+            </h1>
+            <p className="text-lg text-[var(--text-secondary)] max-w-[480px] mb-10 leading-relaxed">
+              Thoughtfully designed products for the pets who make our lives whole.
+              Calming, safety, feeding, and keepsakes — backed by science, made with love.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--text)] text-white font-semibold text-lg hover:opacity-90 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-4"
+              >
+                Explore the Collection
+                <ArrowRight size={20} />
+              </Link>
+              <Link
+                href="/products?cat=memorial"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-[var(--accent)] text-[var(--accent)] font-semibold text-lg hover:bg-[var(--accent)]/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-4"
+              >
+                Memorial &amp; Keepsakes
+              </Link>
+            </div>
           </div>
-          <div className="relative"><Image src="/images/hero-banner.png" alt="Pets with PawHaven" width={800} height={600} className="rounded-2xl shadow-xl" priority unoptimized/></div>
+          <div className="relative">
+            <Image
+              src="/images/hero-banner.png"
+              alt="A happy dog resting on a PawHaven calming mat, looking content and peaceful"
+              width={800}
+              height={600}
+              className="rounded-2xl shadow-xl"
+              priority
+              loading="eager"
+            />
+            {/* Subtle brand mark */}
+            <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-lg px-5 py-3 flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={14} className="text-[var(--accent)] fill-[var(--accent)]" />
+                ))}
+              </div>
+              <span className="text-sm font-semibold text-[var(--text)]">4.9</span>
+              <span className="text-xs text-[var(--text-muted)]">2,000+ reviews</span>
+            </div>
+          </div>
         </div>
       </section>
-      <section className="py-24 bg-white"><div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-14"><h2 className="text-3xl font-bold mb-4">Smart Products, Happier Pets</h2></div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map(p=>(
-            <Link key={p.slug} href={`/products/${p.slug}`} className="group bg-[var(--bg)] rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
-              <div className="relative aspect-square overflow-hidden bg-[var(--border-light)]"><Image src={p.image} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="25vw" unoptimized/>{p.tag&&<span className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold bg-white text-[var(--primary)] shadow-sm">{p.tag}</span>}</div>
-              <div className="p-5"><span className="text-xs text-[var(--text-muted)]">{p.cat}</span><h3 className="font-semibold mb-1">{p.name}</h3><p className="text-xs text-[var(--text-muted)] mb-3">{p.desc}</p><span className="text-lg font-bold">${p.price}</span></div>
-            </Link>
-          ))}
+
+      {/* Category Quick Nav */}
+      <section className="py-8 bg-white border-b border-[var(--border)]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {categories.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/products?cat=${c.slug}`}
+                className="flex-shrink-0 px-5 py-4 rounded-xl border border-[var(--border)] bg-white hover:border-[var(--accent)] hover:shadow-sm transition-all text-center min-w-[100px] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
+              >
+                <div className="text-lg mb-1">{c.emoji}</div>
+                <div className="text-xs font-semibold text-[var(--text)]">{c.name}</div>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div></section>
-      <section className="py-24 bg-[var(--text)] text-white text-center"><div className="max-w-2xl mx-auto px-6"><h2 className="text-3xl font-bold mb-4">Smart Products, Happier Pets</h2><p className="text-[var(--announcement-text)] mb-8">Every product designed with one question: would your pet choose it?</p><Link href="/products" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:opacity-90">Browse All Products <ArrowRight size={20}/></Link></div></section>
+      </section>
+
+      {/* Product Grid */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl font-bold mb-4 text-balance">Designed for happier, healthier pets</h2>
+            <p className="text-[var(--text-secondary)] max-w-lg mx-auto">Every product is chosen with one question in mind: would your pet choose it?</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((p) => (
+              <Link
+                key={p.slug}
+                href={`/products/${p.slug}`}
+                className="group bg-[var(--bg)] rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-4"
+              >
+                <div className="relative aspect-square overflow-hidden bg-[var(--border-light)]">
+                  <Image
+                    src={p.image}
+                    alt={p.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="25vw"
+                  />
+                  {p.tag && (
+                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold bg-white text-[var(--primary)] shadow-sm">
+                      {p.tag}
+                    </span>
+                  )}
+                  <div className="absolute top-2 right-2 z-10">
+                    <WishlistButton product={{ id: p.slug, name: p.name, slug: p.slug, image: p.image, price: p.price }} />
+                  </div>
+                </div>
+                <div className="p-5">
+                  <span className="text-xs text-[var(--text-muted)]">{p.cat}</span>
+                  <h3 className="font-semibold mb-1 text-[var(--text)]">{p.name}</h3>
+                  <p className="text-xs text-[var(--text-muted)] mb-3">{p.desc}</p>
+                  <span className="text-lg font-bold text-[var(--text)]">${p.price}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Bar — below products, supporting purchase decisions */}
+      <section className="py-16 bg-[var(--bg)] border-y border-[var(--border)]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {features.map((f) => (
+              <div key={f.title} className="flex items-center gap-3">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[var(--accent)]/10 flex items-center justify-center">
+                  <f.icon size={18} className="text-[var(--accent)]" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-[var(--text)]">{f.title}</div>
+                  <div className="text-xs text-[var(--text-muted)]">{f.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="py-24 bg-[var(--text)] text-white text-center">
+        <div className="max-w-2xl mx-auto px-6">
+          <h2 className="font-serif text-3xl font-semibold mb-4 text-balance">Ready to give them the best?</h2>
+          <p className="text-[var(--announcement-text)] mb-8 text-lg">From calming comfort to lasting keepsakes — find what your pet deserves.</p>
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--accent)] text-white font-semibold text-lg hover:opacity-90 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--text)]"
+          >
+            Browse All Products
+            <ArrowRight size={20} />
+          </Link>
+        </div>
+      </section>
     </>
   );
 }
