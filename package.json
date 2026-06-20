@@ -11,7 +11,7 @@
     "db:push": "npx prisma db push",
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
-    "postinstall": "echo skip"
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
@@ -30,6 +30,7 @@
     "react-hot-toast": "^2.6.0",
     "react-markdown": "^10.1.0",
     "resend": "^6.12.4",
+    "stripe": "^22.2.1",
     "tailwind-merge": "^3.6.0",
     "zustand": "^5.0.14"
   },
