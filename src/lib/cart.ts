@@ -86,7 +86,7 @@ export const useCartStore = create<CartStore>()(
           0
         ),
     }),
-    { name: 'mythrealms-cart' }
+    { name: 'pawhaven-cart' }
   )
 )
 
