@@ -5,14 +5,14 @@ import { ArrowRight, Star, Heart, Sparkles } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 const products = [
-  { slug:"calming-mat", name:"Weighted Calming Mat", price:89, image:"/images/calming-mat.png", rating:4.9, sold:320, tag:"Bestseller", cat:"Calming" },
-  { slug:"calming-bed", name:"Premium Calming Bed", price:129, image:"/images/calming-bed.png", rating:4.8, sold:156, tag:"New", cat:"Calming" },
-  { slug:"anxiety-vest", name:"Anxiety Relief Vest", price:49, image:"/images/anxiety-vest.png", rating:4.7, sold:280, cat:"Calming" },
-  { slug:"gps-tracker", name:"GPS Pet Tracker Pro", price:149, image:"/images/gps-tracker.png", rating:4.9, sold:410, tag:"Tech", cat:"Safety" },
-  { slug:"slow-feeder", name:"Smart Slow Feeder Bowl", price:69, image:"/images/slow-feeder.png", rating:4.8, sold:195, tag:"Popular", cat:"Feeding" },
-  { slug:"water-fountain", name:"Auto Water Fountain", price:79, image:"/images/water-fountain.png", rating:4.7, sold:168, cat:"Feeding" },
-  { slug:"paw-necklace", name:"Paw Print Memorial Necklace", price:129, image:"/images/paw-necklace.png", rating:5.0, sold:92, tag:"Emotional", cat:"Memorial" },
-  { slug:"travel-carrier", name:"Pet Travel Carrier", price:149, image:"/images/travel-carrier.png", rating:4.8, sold:134, cat:"Travel" },
+  { slug:"calming-mat", name:"Weighted Calming Mat", price:89, image:"/images/calming-mat.png", lifestyle:"/images/products/calming-mat-lifestyle.png", rating:4.9, sold:320, tag:"Bestseller", cat:"Calming" },
+  { slug:"calming-bed", name:"Premium Calming Bed", price:129, image:"/images/calming-bed.png", lifestyle:"/images/products/calming-bed-lifestyle.png", rating:4.8, sold:156, tag:"New", cat:"Calming" },
+  { slug:"anxiety-vest", name:"Anxiety Relief Vest", price:49, image:"/images/anxiety-vest.png", lifestyle:"/images/products/anxiety-vest-lifestyle.png", rating:4.7, sold:280, cat:"Calming" },
+  { slug:"gps-tracker", name:"GPS Pet Tracker Pro", price:149, image:"/images/gps-tracker.png", lifestyle:"/images/products/gps-tracker-lifestyle.png", rating:4.9, sold:410, tag:"Tech", cat:"Safety" },
+  { slug:"slow-feeder", name:"Smart Slow Feeder Bowl", price:69, image:"/images/slow-feeder.png", lifestyle:"/images/products/slow-feeder-lifestyle.png", rating:4.8, sold:195, tag:"Popular", cat:"Feeding" },
+  { slug:"water-fountain", name:"Auto Water Fountain", price:79, image:"/images/water-fountain.png", lifestyle:"/images/products/water-fountain-lifestyle.png", rating:4.7, sold:168, cat:"Feeding" },
+  { slug:"paw-necklace", name:"Paw Print Memorial Necklace", price:129, image:"/images/paw-necklace.png", lifestyle:"/images/products/paw-necklace-lifestyle.png", rating:5.0, sold:92, tag:"Emotional", cat:"Memorial" },
+  { slug:"travel-carrier", name:"Pet Travel Carrier", price:149, image:"/images/travel-carrier.png", lifestyle:"/images/products/travel-carrier-lifestyle.png", rating:4.8, sold:134, cat:"Travel" },
 ];
 
 export default function HomePage() {
@@ -128,7 +128,7 @@ export default function HomePage() {
                 {/* Image */}
                 <div className="relative aspect-square overflow-hidden bg-[var(--border-light)]">
                   <Image
-                    src={p.image}
+                    src={p.lifestyle || p.image}
                     alt={p.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
