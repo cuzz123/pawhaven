@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { ShoppingBag, Heart, Menu, X, Sun, Moon, User } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { useCartStore, useCartUIStore } from "@/lib/cart";
@@ -22,13 +22,21 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const itemCount = useCartStore((s) => s.itemCount());
   const openCart = useCartUIStore((s) => s.openCart);
   const wishlistCount = useWishlistStore((s) => s.count());
 
   const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
+    const [hrefPath, hrefQuery] = href.split("?");
+    if (hrefPath !== pathname) return false;
+    if (!hrefQuery) return true;
+    // Check that the link's query params are a subset of current params
+    const linkParams = new URLSearchParams(hrefQuery);
+    for (const [key, value] of linkParams.entries()) {
+      if (searchParams.get(key) !== value) return false;
+    }
+    return true;
   };
 
   return (

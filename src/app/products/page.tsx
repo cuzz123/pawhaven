@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
 const CATS = ["all","calming","safety","feeding","health","travel","memorial"];
@@ -42,8 +42,22 @@ const PRODUCTS = [
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
-  const [cat,setCat]=useState(searchParams.get("cat") || "all");
+  const router = useRouter();
+  // Derive cat from URL so it stays in sync on client-side nav
+  const cat = searchParams.get("cat") || "all";
   const [q,setQ]=useState(searchParams.get("q") || "");
+
+  const setCat = useCallback((c: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (c === "all") {
+      params.delete("cat");
+    } else {
+      params.set("cat", c);
+    }
+    const qs = params.toString();
+    router.push(`/products${qs ? `?${qs}` : ""}`, { scroll: false });
+  }, [router, searchParams]);
+
   let items=PRODUCTS.filter(p=>cat==="all"||p.cat===cat);
   if(q) items=items.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
@@ -22,7 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head><meta name="theme-color" content="#FDF8F4" /><link rel="icon" href="/favicon.svg" /><OrganizationJsonLd /></head>
       <body className="antialiased">
         <Providers>
-          <AnnouncementBar /><Header /><CartDrawer />
+          <AnnouncementBar /><Suspense fallback={<div className="h-[72px]" />}><Header /></Suspense><CartDrawer />
           <main id="main-content">{children}</main>
           <Footer />
         </Providers>

@@ -1,29 +1,59 @@
 import NextAuth from "next-auth";
-import Google from "@auth/core/providers/google";
+import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import { compare, hash } from "bcryptjs";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { compare } from "bcryptjs";
 import { db } from "@/lib/db";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [
+const providers: any[] = [
+  Credentials({
+    name: "credentials",
+    credentials: { email: { label: "Email" }, password: { label: "Password" } },
+    async authorize(credentials) {
+      if (!credentials?.email || !credentials?.password) return null;
+      const user = await db.user.findUnique({ where: { email: String(credentials.email) } });
+      if (!user || !user.password) return null;
+      const valid = await compare(String(credentials.password), user.password);
+      if (!valid) return null;
+      return { id: user.id, email: user.email, name: user.name, role: user.role };
+    },
+  }),
+];
+
+// Only add Google provider when credentials are configured
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  providers.push(
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    }),
-    Credentials({
-      name: "credentials",
-      credentials: { email: { label: "Email" }, password: { label: "Password" } },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-        const user = await db.user.findUnique({ where: { email: String(credentials.email) } });
-        if (!user) return null;
-        const valid = await compare(String(credentials.password), user.password);
-        if (!valid) return null;
-        return { id: user.id, email: user.email, name: user.name, role: user.role };
-      },
-    }),
-  ],
-  pages: { signIn: "/auth/signin" },
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    })
+  );
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(db),
+  providers,
+  callbacks: {
+    async signIn({ user, account }) {
+      // Allow all OAuth sign-ins; PrismaAdapter handles account linking
+      return true;
+    },
+    jwt({ token, user }) {
+      if (user) { token.role = (user as any).role; token.id = user.id; }
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        (session.user as any).id = token.id;
+        (session.user as any).role = token.role;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/error",
+  },
   session: { strategy: "jwt" },
   secret: process.env.AUTH_SECRET,
 });

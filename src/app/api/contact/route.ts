@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
-
-const RATE_LIMIT = new Map<string, number>();
+import { applyRateLimit } from "@/lib/server/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.headers.get("x-forwarded-for") || "unknown";
-    const now = Date.now();
-    const last = RATE_LIMIT.get(ip) || 0;
-    if (now - last < 60000) return NextResponse.json({ error: "Too many requests. Please wait a minute." }, { status: 429 });
-    RATE_LIMIT.set(ip, now);
+    const rateLimitResponse = await applyRateLimit(req, { windowMs: 60_000, maxRequests: 3 });
+    if (rateLimitResponse) return rateLimitResponse;
 
     const { name, email, message } = await req.json();
     if (!email || !message) return NextResponse.json({ error: "Email and message required" }, { status: 400 });
