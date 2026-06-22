@@ -189,7 +189,6 @@ export function SearchOverlay() {
                           fill
                           sizes="48px"
                           className="object-cover"
-                          unoptimized={result.image.startsWith("http")}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[var(--text-muted)] text-[10px]">

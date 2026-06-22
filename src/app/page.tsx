@@ -81,7 +81,6 @@ export default function HomePage() {
                 height={600}
                 className="w-full h-auto"
                 priority
-                unoptimized
               />
               {/* Subtle overlay badge */}
               <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl px-4 py-2.5 shadow-lg">
@@ -133,7 +132,6 @@ export default function HomePage() {
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     sizes="25vw"
-                    unoptimized
                   />
                   {p.tag && (
                     <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white text-[var(--primary)] shadow-sm">

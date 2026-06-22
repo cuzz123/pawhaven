@@ -6,6 +6,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/layout/CartDrawer";
 import { Providers } from "./providers";
+import { OrganizationJsonLd } from "@/components/ui/JsonLd";
+import { Analytics } from "@/components/layout/Analytics";
 
 export const metadata: Metadata = {
   title: "PawHaven — Smart Pet Wellness & Emotional Care",
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <head><meta name="theme-color" content="#FDF8F4" /><link rel="icon" href="/favicon.svg" /></head>
+      <head><meta name="theme-color" content="#FDF8F4" /><link rel="icon" href="/favicon.svg" /><OrganizationJsonLd /></head>
       <body className="antialiased">
         <Providers>
           <AnnouncementBar /><Header /><CartDrawer />
@@ -25,6 +27,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Footer />
         </Providers>
         <Toaster position="bottom-center" />
+        <Analytics />
       </body>
     </html>
   );

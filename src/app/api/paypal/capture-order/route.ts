@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 const SECRET = process.env.PAYPAL_SECRET || "";
@@ -25,8 +27,28 @@ export async function POST(req: NextRequest) {
     });
     const d = await r.json();
 
-    // Payment succeeded. TODO: persist order to DB once guest checkout
-    // flow is complete (needs guest User or nullable userId in schema).
+    // Persist order to database
+    const session = await auth();
+    if (session?.user?.id && items?.length > 0) {
+      const capturedAmount = d.purchase_units?.[0]?.payments?.captures?.[0]?.amount?.value
+        ? parseFloat(d.purchase_units[0].payments.captures[0].amount.value)
+        : total;
+
+      await db.order.create({
+        data: {
+          userId: session.user.id,
+          total: capturedAmount,
+          status: d.status === "COMPLETED" ? "paid" : "pending",
+          items: {
+            create: items.map((item: { productId: string; quantity: number; price: number }) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.price,
+            })),
+          },
+        },
+      });
+    }
 
     return NextResponse.json({ status: d.status, id: d.id });
   } catch (e: any) {

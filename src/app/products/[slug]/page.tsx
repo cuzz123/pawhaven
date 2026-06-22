@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Star, Truck, Shield, ArrowLeft, Check } from "lucide-react";
 import { AddToCartButton } from "@/components/product/AddToCartButton";
+import { ProductJsonLd, BreadcrumbJsonLd } from "@/components/ui/JsonLd";
 
 const PRODUCTS: Record<string, any> = {
   "calming-mat": { name:"Weighted Calming Mat", price:89, image:"/images/calming-mat.png", tag:"Bestseller", cat:"Calming & Anxiety", desc:"Deep pressure therapy for anxious pets. Evenly distributed glass beads provide gentle, constant pressure.", features:["Plush microfiber cover (machine washable)","Glass bead filling","Non-slip bottom","3 sizes: S/M/L","Veterinarian recommended"] },
@@ -49,8 +50,27 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const p = PRODUCTS[slug];
   if (!p) notFound();
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://pawhaven.com";
+  const productUrl = `${siteUrl}/products/${slug}`;
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
+      <ProductJsonLd
+        name={p.name}
+        description={p.desc}
+        images={[`${siteUrl}${p.image}`]}
+        price={p.price}
+        sku={slug}
+        url={productUrl}
+        category={p.cat}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: siteUrl },
+          { name: "Products", url: `${siteUrl}/products` },
+          { name: p.name, url: productUrl },
+        ]}
+      />
       <nav className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-4" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-[var(--text)] transition-colors">Home</Link>
         <span>/</span>
@@ -63,7 +83,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </Link>
       <div className="grid lg:grid-cols-2 gap-12">
         <div className="relative aspect-square rounded-2xl overflow-hidden bg-[var(--border-light)]">
-          <Image src={p.image} alt={p.name} fill className="object-cover" sizes="50vw" priority unoptimized />
+          <Image src={p.image} alt={p.name} fill className="object-cover" sizes="50vw" priority />
           {p.tag && <span className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold bg-white text-[var(--primary)] shadow-sm">{p.tag}</span>}
         </div>
         <div>
